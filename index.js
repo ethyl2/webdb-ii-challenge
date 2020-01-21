@@ -1,6 +1,7 @@
 const express = require('express');
-const server = express();
+
 const port = process.env.port || 5000;
+const server = require('./api/server.js');
 
 server.use('/', (req, res) => {
     res.send(`API up and running on port ${port}`);
