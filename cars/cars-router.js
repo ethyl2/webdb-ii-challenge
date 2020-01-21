@@ -59,6 +59,30 @@ router.post('/', validateBody(['vin', 'make', 'model', 'mileage']), (req, res) =
         });
 });
 
+router.delete('/:id', validateId, (req, res) => {
+    const id = req.params.id;
+    db('cars-table').where({id: id}).del()
+        .then(response => {
+            console.log(response);
+            if (response === 1) {
+                db('cars-table')
+                    .then(newResponse => {
+                        res.status(200).json(newResponse);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({error: error, message: `Error while retrieving cars after deleting car with id ${id}`});
+                    });
+            } else {
+                res.status(500).json({message: `Error while deleting car with id ${id}`});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err, message: `Error while deleting car with id ${id}`});
+        });
+});
+
 function validateBody(fields) {
     // remember, fields must be an array
     return function(req, res, next) {
