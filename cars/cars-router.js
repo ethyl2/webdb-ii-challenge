@@ -83,6 +83,29 @@ router.delete('/:id', validateId, (req, res) => {
         });
 });
 
+router.put('/:id', validateId, (req, res) => {
+    const id = req.params.id;
+    db('cars-table').where({id: id}).update(req.body)
+        .then(response => {
+            if (response === 1) {
+                db('cars-table').where({id: id}).first()
+                    .then(newResponse => {
+                        res.status(200).json(newResponse);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({error: error, message: `Error while retrieving car after updating car with id ${id}`});
+                    });
+                } else {
+                    res.status(500).json({error: err, message: `Error while updating car with id ${id}`});
+                }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err, message: `Error while updating car with id ${id}`});
+        });
+});
+
 function validateBody(fields) {
     // remember, fields must be an array
     return function(req, res, next) {
